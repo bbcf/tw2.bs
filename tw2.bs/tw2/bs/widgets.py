@@ -3,8 +3,7 @@ import tw2.forms as twf
 
 
 class BsFileField(twf.TextField):
-    #template = "genshi:tw2.bs.templates.bs"
-    template = "tw2.forms.templates.input_field"
+    template = "tw2.bs.templates.bs"
 
     # declare static resources here
     # you can remove either or both of these, if not needed
@@ -22,6 +21,9 @@ class BsFileField(twf.TextField):
         super(BsFileField, self).prepare()
         # put code here to run just before the widget is displayed
         print "prepare"
+        self.attrs['name'] = 'bloudiblou'
+        self.safe_modify('resources')
+        self.add_call(twc.js_function('bs_hide_fields')())
 
     def _validate(self, value, state=None):
         super(BsFileField, self)._validate(value, state)

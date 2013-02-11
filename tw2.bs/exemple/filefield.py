@@ -2,22 +2,30 @@ import tw2.core
 import tw2.forms
 import tw2.devtools
 import tw2.bs
+import tw2.jquery
 
 
 class Index(tw2.core.Page):
     title = 'tw2.bs FileField'
-    template = 'genshi:./index.html'
 
     def fetch_data(self, req):
         print "Fetch data : %s" % req
         self.req = str(req)
 
 
+bs_file_field_js = tw2.core.JSLink(
+    modname=__name__,
+    filename='static/bs.js',
+    resources=[tw2.jquery.jquery_js],
+    location='headbottom')
+
+
 class BsForm(tw2.forms.FormPage):
-    resources = [tw2.core.CSSLink(filename='bs.css')]
-    title = 'Movie'
+    resources = [bs_file_field_js]
+    title = 'BioScript Widgets'
 
     class child(tw2.forms.TableForm):
-        bsfielfield = tw2.bs.BsFileField()
+        one = tw2.bs.BsFileField()
+        two = tw2.bs.BsFileField()
 
 tw2.devtools.dev_server(port=8000)
