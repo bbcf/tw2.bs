@@ -1,0 +1,2 @@
+recursive-include tw2/bs/templates *
+recursive-include tw2/bs/static *
