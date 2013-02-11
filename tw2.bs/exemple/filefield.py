@@ -27,5 +27,6 @@ class BsForm(tw2.forms.FormPage):
     class child(tw2.forms.TableForm):
         one = tw2.bs.BsFileField()
         two = tw2.bs.BsFileField()
+        three = tw2.forms.TextField()
 
 tw2.devtools.dev_server(port=8000)
