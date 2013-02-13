@@ -3,15 +3,15 @@ import tw2.forms
 import tw2.devtools
 import tw2.bs
 import tw2.jquery
+import tw2.dynforms
 
 
-class Index(tw2.core.Page):
-    title = 'tw2.bs FileField'
+class Multi(tw2.dynforms.GrowingGridLayout):
+    """A modified GridLayout that is centered on multifile upload"""
 
-    def fetch_data(self, req):
-        print "Fetch data : %s" % req
-        self.req = str(req)
-
+    def _validate(self, value, state=None):
+        value = [v for v in value if not ('del.x' in v and 'del.y' in v)]
+        return value
 
 bs_file_field_js = tw2.core.JSLink(
     modname=__name__,
@@ -20,7 +20,7 @@ bs_file_field_js = tw2.core.JSLink(
     location='headbottom')
 
 
-class BsForm(tw2.forms.FormPage):
+class bsForm(tw2.forms.FormPage):
     resources = [bs_file_field_js]
     title = 'BioScript Widgets'
 
@@ -28,5 +28,13 @@ class BsForm(tw2.forms.FormPage):
         one = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True))
         two = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True, extensions=['bed']))
         three = tw2.forms.TextField()
+
+
+class Index(tw2.forms.FormPage):
+    resources = [bs_file_field_js]
+    title = 'BioScript multiple widget'
+
+    class child(tw2.forms.TableForm):
+        test = tw2.bs.MultipleBsFileField()
 
 tw2.devtools.dev_server(port=8000)

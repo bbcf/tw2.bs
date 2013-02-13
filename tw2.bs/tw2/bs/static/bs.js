@@ -23,3 +23,14 @@ bs_connect_checkbox = function(selector, input, label){
     });
 
 };
+
+bs_init_multiple = function(compound_id){
+    console.log('init bs_init_multiple');
+    bs_init_file_field(compound_id);
+    var selector = '#' + compound_id.replace(':', '\\:');
+    var $root = $(selector);
+    var template = '<input py:attrs="w.attrs"/> <label><input type="checkbox" name="checkbox" value="value" />File upload</label>';
+    $root.change(function(){
+        console.log('change');
+    });
+};

@@ -1,5 +1,6 @@
 import tw2.core as twc
 import tw2.forms as twf
+import tw2.dynforms as twd
 import re
 import cgi
 import os
@@ -44,7 +45,7 @@ class BsFileFieldValidator(twc.Validator):
 
 
 class BsFileField(twf.TextField):
-    template = "tw2.bs.templates.bs"
+    template = "tw2.bs.templates.filefield"
     type = 'text'
     placeholder = 'Enter url here'
     resources = [
@@ -59,6 +60,27 @@ class BsFileField(twf.TextField):
         super(BsFileField, self).prepare()
         self.safe_modify('resources')
         self.add_call(twc.js_function('bs_init_file_field')(self.compound_id))
+
+    def _validate(self, value, state=None):
+        super(BsFileField, self)._validate(value, state)
+
+
+class MultipleBsFileField(twf.TextField):
+    template = "tw2.bs.templates.multiple"
+    type = 'text'
+    placeholder = 'Enter url here'
+    resources = [
+        twc.JSLink(modname=__name__, filename='static/bs.js'),
+    ]
+
+    @classmethod
+    def post_define(cls):
+        pass
+
+    def prepare(self):
+        super(MultipleBsFileField, self).prepare()
+        self.safe_modify('resources')
+        self.add_call(twc.js_function('bs_init_multiple')(self.compound_id))
 
     def _validate(self, value, state=None):
         super(BsFileField, self)._validate(value, state)

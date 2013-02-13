@@ -16,4 +16,5 @@ tw2/bs/widgets.py
 tw2/bs/static/bs.css
 tw2/bs/static/bs.js
 tw2/bs/templates/__init__.py
-tw2/bs/templates/bs.html
+tw2/bs/templates/filefield.html
+tw2/bs/templates/multiple.html
