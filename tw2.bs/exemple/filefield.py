@@ -25,8 +25,8 @@ class BsForm(tw2.forms.FormPage):
     title = 'BioScript Widgets'
 
     class child(tw2.forms.TableForm):
-        one = tw2.bs.BsFileField()
-        two = tw2.bs.BsFileField()
+        one = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True))
+        two = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True, extensions=['bed']))
         three = tw2.forms.TextField()
 
 tw2.devtools.dev_server(port=8000)
