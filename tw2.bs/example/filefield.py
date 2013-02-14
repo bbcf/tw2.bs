@@ -20,17 +20,25 @@ bs_file_field_js = tw2.core.JSLink(
     location='headbottom')
 
 
-class bsForm(tw2.forms.FormPage):
+class Index(tw2.forms.FormPage):
     resources = [bs_file_field_js]
     title = 'BioScript Widgets'
 
     class child(tw2.forms.TableForm):
         one = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True))
-        two = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True, extensions=['bed']))
-        three = tw2.forms.TextField()
+        # two = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True, extensions=['bed']))
+        three = tw2.forms.TextField(validator=tw2.core.Validator(required=True))
 
 
-class Index(tw2.forms.FormPage):
+class Triple(tw2.forms.FormPage):
+    resources = [bs_file_field_js]
+    title = 'BioScript Widgets'
+
+    class child(tw2.forms.TableForm):
+        one = tw2.bs.BsTripleFileField(validator=tw2.bs.BsFileFieldValidator(required=True), options=[('one', '{"p": "http://one", "d": "one"}'), ('two', '{"p": "http://two", "d": "two"}'), ('not valid', '{"p": "cdcsd", "d": "two"}')])
+
+
+class Index2(tw2.forms.FormPage):
     resources = [bs_file_field_js]
     title = 'BioScript multiple widget'
 

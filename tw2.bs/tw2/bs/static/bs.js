@@ -1,36 +1,49 @@
-bs_init_file_field = function(compound_id){
+bs_init_file_field = function(compound_id, select){
     var selector = '#' + compound_id.replace(':', '\\:');
     var $root = $(selector);
     console.log(selector);
-    var label = $root.next('label');
-    label.old_input = '<input id="' + compound_id + '" name="' + compound_id + '" type="file"/>';
-    label.old_label = '<label><input type="checkbox" name="checkbox" value="value" />Url</label>';
-    bs_connect_checkbox(selector, $root, label);
-};
-
-bs_connect_checkbox = function(selector, input, label){
-    var cb = $(label).find('input:checkbox');
-    $(cb).click(function(){
-        var ninput = label.old_input;
-        var nlabel = label.old_label;
-        input.replaceWith(ninput);
-        label.replaceWith(nlabel);
-        $label = $(selector).next('label');
-        $label.old_label = label;
-        $label.old_input = input;
-        $(this).attr('checked', false);
-        bs_connect_checkbox(selector, $(selector), $label);
+    // hide not desired inputs
+    $root.find('input:not(:radio):not(:' + select + ')').attr('name', '').hide();
+    // show desired one
+    $root.find('input:' + select + '').attr('name', compound_id).show();
+    // check the right radio button
+    $root.find('input:radio.bsradio_' + select).attr('checked', 'checked');
+    //connect the radio buttons
+    $root.find(':radio').change(function(){
+        var val = $(this).val();
+        $root.find('input:not(:radio):not(:'+ val + ')').attr('name', '').hide();
+        $root.find('input:' + val + '').attr('name', compound_id).show();
     });
-
 };
 
-bs_init_multiple = function(compound_id){
-    console.log('init bs_init_multiple');
-    bs_init_file_field(compound_id);
+bs_init_triple_file_field = function(compound_id, select){
     var selector = '#' + compound_id.replace(':', '\\:');
     var $root = $(selector);
-    var template = '<input py:attrs="w.attrs"/> <label><input type="checkbox" name="checkbox" value="value" />File upload</label>';
-    $root.change(function(){
-        console.log('change');
+    console.log(selector);
+    if (select != 'select'){
+        // hide select && show input desired
+        $root.find('select').attr('name', '').hide();
+        $root.find('input:' + select + '').attr('name', compound_id).show();
+        // hide not desired inputs
+        $root.find('input:not(:radio):not(:' + select + ')').attr('name', '').hide();
+    } else {
+        $root.find('input:not(:radio)').attr('name', '').hide();
+    }
+    // check the right radio button
+    $root.find('input:radio.bsradio_' + select).attr('checked', 'checked');
+    
+    //connect the radio buttons
+    $root.find(':radio').change(function(){
+        var val = $(this).val();
+        if (val == 'select'){
+            $root.find('input:not(:radio)').attr('name', '').hide();
+            $root.find('select').attr('name', compound_id).show();
+        } else {
+            $root.find('input:' + val).attr('name', compound_id).show();
+            $root.find('select').attr('name', '').hide();
+            $root.find('input:not(:radio):not(:' + val + ')').attr('name', '').hide();
+        }
+        
+        
     });
 };

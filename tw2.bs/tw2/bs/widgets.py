@@ -4,6 +4,10 @@ import tw2.dynforms as twd
 import re
 import cgi
 import os
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 
 class BsFileFieldValidator(twc.Validator):
@@ -33,6 +37,11 @@ class BsFileFieldValidator(twc.Validator):
 
     def _validate_python(self, value, state=None):
         if isinstance(value, basestring):
+            try:
+                value = json.loads(value)
+                value = value['p']
+            except:
+                pass
             if not self.regex.search(value):
                 raise twc.ValidationError('"%s" is not a valid URL.' % value, self)
         elif isinstance(value, cgi.FieldStorage):
@@ -45,7 +54,7 @@ class BsFileFieldValidator(twc.Validator):
 
 
 class BsFileField(twf.TextField):
-    template = "tw2.bs.templates.filefield"
+    template = "tw2.bs.templates.doublefilefield"
     type = 'text'
     placeholder = 'Enter url here'
     resources = [
@@ -59,10 +68,59 @@ class BsFileField(twf.TextField):
     def prepare(self):
         super(BsFileField, self).prepare()
         self.safe_modify('resources')
-        self.add_call(twc.js_function('bs_init_file_field')(self.compound_id))
+        start_field = 'text'
+        if isinstance(self.value, cgi.FieldStorage):
+            start_field = 'file'
+        self.add_call(twc.js_function('bs_init_file_field')(self.compound_id, start_field))
 
     def _validate(self, value, state=None):
+        print "validate %s, %s" % (value, state)
         super(BsFileField, self)._validate(value, state)
+
+
+class BsTripleFileField(twf.TextField):
+    template = "tw2.bs.templates.triplefilefield"
+    type = 'text'
+    placeholder = 'Enter url here'
+    resources = [
+        twc.JSLink(modname=__name__, filename='static/bs.js'),
+    ]
+    options = None
+
+    @classmethod
+    def post_define(cls):
+        pass
+
+    def prepare(self):
+        super(BsTripleFileField, self).prepare()
+        self.safe_modify('resources')
+        start_field = 'text'
+        if isinstance(self.value, cgi.FieldStorage):
+            start_field = 'file'
+        else:
+            try:
+                value = json.loads(self.value)
+                start_field = 'select'
+            except:
+                pass
+        self.add_call(twc.js_function('bs_init_triple_file_field')(self.compound_id, start_field))
+        opts = []
+        for opt in self.options:
+            d = {}
+            if len(opt) == 2:
+                d['value'] = opt[1]
+                d['display'] = opt[0]
+            else:
+                d['value'] = opt
+                d['display'] = opt
+            opts.append(d)
+        self.safe_modify('attrs')
+        self.attrs['opts'] = opts
+
+
+    def _validate(self, value, state=None):
+        print "validate %s, %s" % (value, state)
+        super(BsTripleFileField, self)._validate(value, state)
 
 
 class MultipleBsFileField(twf.TextField):
