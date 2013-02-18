@@ -85,7 +85,7 @@ class BsTripleFileField(twf.TextField):
     resources = [
         twc.JSLink(modname=__name__, filename='static/bs.js'),
     ]
-    options = None
+    options = []
 
     @classmethod
     def post_define(cls):
@@ -99,7 +99,7 @@ class BsTripleFileField(twf.TextField):
             start_field = 'file'
         else:
             try:
-                value = json.loads(self.value)
+                json.loads(self.value)
                 start_field = 'select'
             except:
                 pass
@@ -117,19 +117,17 @@ class BsTripleFileField(twf.TextField):
         self.safe_modify('attrs')
         self.attrs['opts'] = opts
 
-
     def _validate(self, value, state=None):
         print "validate %s, %s" % (value, state)
         super(BsTripleFileField, self)._validate(value, state)
 
 
-class MultipleBsFileField(twf.TextField):
+class MultipleBsFileField(twf.RowLayout):
     template = "tw2.bs.templates.multiple"
-    type = 'text'
-    placeholder = 'Enter url here'
     resources = [
         twc.JSLink(modname=__name__, filename='static/bs.js'),
     ]
+    compounds = []
 
     @classmethod
     def post_define(cls):
@@ -139,6 +137,8 @@ class MultipleBsFileField(twf.TextField):
         super(MultipleBsFileField, self).prepare()
         self.safe_modify('resources')
         self.add_call(twc.js_function('bs_init_multiple')(self.compound_id))
+        self.safe_modify('attrs')
+        self.attrs['compounds'] = self.compounds
 
     def _validate(self, value, state=None):
         super(BsFileField, self)._validate(value, state)

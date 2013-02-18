@@ -1,8 +1,9 @@
 <span xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/">
     <div id="${w.compound_id}">
-        <input placeholder="${w.placeholder}" type="text"/>
-        <input type="file"/>
+        <span py:attrs="w.attrs"></span>
         <input type="radio" class="bsradio_text" name="bs_group" value="text">Url</input>
         <input type="radio" class="bsradio_file" name="bs_group" value="file">File Upload</input>
+        <input placeholder="${w.placeholder}" type="text"/>
+        <input type="file"/>
     </div>
 </span>

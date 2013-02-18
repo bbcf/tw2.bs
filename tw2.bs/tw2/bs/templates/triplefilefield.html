@@ -1,5 +1,8 @@
 <span xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/">
-    <div id="${w.compound_id}">
+    <div id="${w.compound_id}" py:attrs="w.attrs">
+        <input type="radio" class="bsradio_text" name="bs_group" value="text">Url</input>
+        <input type="radio" class="bsradio_file" name="bs_group" value="file">File Upload</input>
+        <input type="radio" class="bsradio_select" name="bs_group" value="select">Select</input>
         <input placeholder="${w.placeholder}" type="text"/>
         <input type="file"/>
         <select type="select">
@@ -7,8 +10,6 @@
                 <option value="${item.value}">${item.display}</option>                
             </py:for>
         </select>
-        <input type="radio" class="bsradio_text" name="bs_group" value="text">Url</input>
-        <input type="radio" class="bsradio_file" name="bs_group" value="file">File Upload</input>
-        <input type="radio" class="bsradio_select" name="bs_group" value="select">Select</input>
+        
     </div>
 </span>

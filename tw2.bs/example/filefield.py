@@ -38,11 +38,14 @@ class Triple(tw2.forms.FormPage):
         one = tw2.bs.BsTripleFileField(validator=tw2.bs.BsFileFieldValidator(required=True), options=[('one', '{"p": "http://one", "d": "one"}'), ('two', '{"p": "http://two", "d": "two"}'), ('not valid', '{"p": "cdcsd", "d": "two"}')])
 
 
-class Index2(tw2.forms.FormPage):
-    resources = [bs_file_field_js]
+class Mult(tw2.forms.FormPage):
     title = 'BioScript multiple widget'
+    resources = [bs_file_field_js]
 
     class child(tw2.forms.TableForm):
-        test = tw2.bs.MultipleBsFileField()
+
+        class multi(tw2.dynforms.GrowingGridLayout):
+            test = tw2.bs.BsFileField()
+            #test = tw2.forms.TextField()
 
 tw2.devtools.dev_server(port=8000)

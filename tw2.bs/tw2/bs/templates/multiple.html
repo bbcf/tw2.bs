@@ -1,5 +1,7 @@
 <span xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/">
-    <div class="bs_multiple">
-        <input py:attrs="w.attrs"/> <label><input type="checkbox" name="checkbox" value="value" />File upload</label>
+    <div id="${w.compound_id}">
+        <py:for each="item in ${w.compounds}">
+            <li>${item.display()}</li>
+        </py:for>
     </div>
 </span>
