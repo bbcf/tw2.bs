@@ -43,9 +43,8 @@ class Mult(tw2.forms.FormPage):
     resources = [bs_file_field_js]
 
     class child(tw2.forms.TableForm):
-
-        class multi(tw2.dynforms.GrowingGridLayout):
+        class multi(tw2.bs.BsMultiple):
             test = tw2.bs.BsFileField()
-            #test = tw2.forms.TextField()
+            text = tw2.forms.TextField()
 
 tw2.devtools.dev_server(port=8000)

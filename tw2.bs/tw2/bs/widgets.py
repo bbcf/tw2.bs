@@ -122,23 +122,25 @@ class BsTripleFileField(twf.TextField):
         super(BsTripleFileField, self)._validate(value, state)
 
 
-class MultipleBsFileField(twf.RowLayout):
+class BsMultiple(twf.GridLayout):
     template = "tw2.bs.templates.multiple"
     resources = [
         twc.JSLink(modname=__name__, filename='static/bs.js'),
     ]
-    compounds = []
+
+    repetitions = twc.Variable()
+    extra_reps = twc.Variable(default=1)
+    mix_reps = twc.Variable()
+    max_reps = twc.Variable()
 
     @classmethod
     def post_define(cls):
         pass
 
     def prepare(self):
-        super(MultipleBsFileField, self).prepare()
+        super(BsMultiple, self).prepare()
         self.safe_modify('resources')
         self.add_call(twc.js_function('bs_init_multiple')(self.compound_id))
-        self.safe_modify('attrs')
-        self.attrs['compounds'] = self.compounds
 
     def _validate(self, value, state=None):
-        super(BsFileField, self)._validate(value, state)
+        super(BsMultiple, self)._validate(value, state)

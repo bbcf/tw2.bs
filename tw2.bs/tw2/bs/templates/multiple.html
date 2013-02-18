@@ -1,7 +1,5 @@
 <span xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/">
     <div id="${w.compound_id}">
-        <py:for each="item in ${w.compounds}">
-            <li>${item.display()}</li>
-        </py:for>
+        <py:for each="item in w.children">${item.display()}</py:for>
     </div>
 </span>
