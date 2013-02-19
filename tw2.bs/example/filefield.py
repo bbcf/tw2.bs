@@ -6,13 +6,6 @@ import tw2.jquery
 import tw2.dynforms
 
 
-class Multi(tw2.dynforms.GrowingGridLayout):
-    """A modified GridLayout that is centered on multifile upload"""
-
-    def _validate(self, value, state=None):
-        value = [v for v in value if not ('del.x' in v and 'del.y' in v)]
-        return value
-
 bs_file_field_js = tw2.core.JSLink(
     modname=__name__,
     filename='static/bs.js',
@@ -20,14 +13,12 @@ bs_file_field_js = tw2.core.JSLink(
     location='headbottom')
 
 
-class Index(tw2.forms.FormPage):
+class Double(tw2.forms.FormPage):
     resources = [bs_file_field_js]
     title = 'BioScript Widgets'
 
     class child(tw2.forms.TableForm):
         one = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True))
-        # two = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True, extensions=['bed']))
-        three = tw2.forms.TextField(validator=tw2.core.Validator(required=True))
 
 
 class Triple(tw2.forms.FormPage):
@@ -43,8 +34,24 @@ class Mult(tw2.forms.FormPage):
     resources = [bs_file_field_js]
 
     class child(tw2.forms.TableForm):
+        class inputs(tw2.bs.BsMultiple):
+            files = tw2.bs.BsFileField()
+
+
+class Test(tw2.forms.FormPage):
+    title = 'BioScript multiple widget'
+
+    class child(tw2.forms.TableForm):
         class multi(tw2.bs.BsMultiple):
-            test = tw2.bs.BsFileField()
-            text = tw2.forms.TextField()
+            toto = tw2.forms.TextField()
+
+
+class Mult3(tw2.forms.FormPage):
+    title = 'BioScript multiple widget'
+    resources = [bs_file_field_js]
+
+    class child(tw2.forms.TableForm):
+        class multi(tw2.bs.BsMultiple):
+            test = tw2.bs.BsTripleFileField(options=['one', 'two'])
 
 tw2.devtools.dev_server(port=8000)

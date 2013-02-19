@@ -74,8 +74,7 @@ class BsFileField(twf.TextField):
         self.add_call(twc.js_function('bs_init_file_field')(self.compound_id, start_field))
 
     def _validate(self, value, state=None):
-        print "validate %s, %s" % (value, state)
-        super(BsFileField, self)._validate(value, state)
+        return super(BsFileField, self)._validate(value, state)
 
 
 class BsTripleFileField(twf.TextField):
@@ -118,29 +117,60 @@ class BsTripleFileField(twf.TextField):
         self.attrs['opts'] = opts
 
     def _validate(self, value, state=None):
-        print "validate %s, %s" % (value, state)
-        super(BsTripleFileField, self)._validate(value, state)
+        return super(BsTripleFileField, self)._validate(value, state)
 
 
-class BsMultiple(twf.GridLayout):
+# class Multi(tw2.dynforms.GrowingGridLayout):
+#     pass
+
+class StripBlanksAndBSRadioButtons(twc.Validator):
+    def any_content(self, val):
+        if isinstance(val, (list, tuple)):
+            for v in val:
+                if self.any_content(v):
+                    return True
+            return False
+        elif isinstance(val, dict):
+            for k in val:
+                if k == 'id':
+                    continue
+                if 'bs_group' in k:
+                    continue
+                if self.any_content(val[k]):
+                    return True
+            return False
+        elif isinstance(val, cgi.FieldStorage):
+            try:
+                return bool(val.filename)
+            except:
+                return False
+        else:
+            return bool(val)
+
+    def to_python(self, value, state=None):
+        return [v for v in value if self.any_content(v)]
+
+
+class RegroupMultipleValues(object):
+    def regroup(self, values):
+        result = {}
+        for value in values:
+            for k, v in value.iteritems():
+                if k not in result:
+                    result[k] = []
+                result[k].append(v)
+        return result
+
+
+class BsMultiple(twd.GrowingGridLayout):
+
     template = "tw2.bs.templates.multiple"
-    resources = [
-        twc.JSLink(modname=__name__, filename='static/bs.js'),
-    ]
-
-    repetitions = twc.Variable()
-    extra_reps = twc.Variable(default=1)
-    mix_reps = twc.Variable()
-    max_reps = twc.Variable()
-
-    @classmethod
-    def post_define(cls):
-        pass
 
     def prepare(self):
         super(BsMultiple, self).prepare()
-        self.safe_modify('resources')
-        self.add_call(twc.js_function('bs_init_multiple')(self.compound_id))
 
     def _validate(self, value, state=None):
-        super(BsMultiple, self)._validate(value, state)
+        value = [v for v in value if not ('del.x' in v and 'del.y' in v)]
+        value = twc.RepeatingWidget._validate(self, [None] + StripBlanksAndBSRadioButtons().to_python(value), state)[1:]
+        value = RegroupMultipleValues().regroup(value)
+        return value
