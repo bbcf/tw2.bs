@@ -1,6 +1,8 @@
 import tw2.core as twc
 import tw2.forms as twf
 import tw2.dynforms as twd
+import tw2
+import tw2.jquery
 import re
 import cgi
 import os
@@ -8,6 +10,8 @@ try:
     import simplejson as json
 except ImportError:
     import json
+
+from tw2.core import validation as vd
 
 
 class BsFileFieldValidator(twc.Validator):
@@ -37,13 +41,14 @@ class BsFileFieldValidator(twc.Validator):
 
     def _validate_python(self, value, state=None):
         if isinstance(value, basestring):
-            try:
-                value = json.loads(value)
-                value = value['p']
-            except:
-                pass
-            if not self.regex.search(value):
-                raise twc.ValidationError('"%s" is not a valid URL.' % value, self)
+            if not value.startswith('FieldStorage('):
+                try:
+                    value = json.loads(value)
+                    value = value['p']
+                except:
+                    pass
+                if not self.regex.search(value):
+                    raise twc.ValidationError('"%s" is not a valid URL.' % value, self)
         elif isinstance(value, cgi.FieldStorage):
             if self.required and not getattr(value, 'filename', None):
                 raise twc.ValidationError('required', self)
@@ -53,13 +58,18 @@ class BsFileFieldValidator(twc.Validator):
                     raise twc.ValidationError('"%s" is not a valid extension :  only "%s" are allowed' % (ext, ', '.join([e for e in self.extensions])), self)
 
 
-class BsFileField(twf.TextField):
+bs_file_field_js = twc.JSLink(
+    modname=__name__,
+    filename='static/bs.js',
+    resources=[tw2.jquery.jquery_js],
+    location='headbottom')
+
+
+class BsFileField(twf.InputField):
     template = "tw2.bs.templates.doublefilefield"
     type = 'text'
     placeholder = 'Enter url here'
-    resources = [
-        twc.JSLink(modname=__name__, filename='static/bs.js'),
-    ]
+    resources = [bs_file_field_js]
 
     @classmethod
     def post_define(cls):
@@ -74,16 +84,15 @@ class BsFileField(twf.TextField):
         self.add_call(twc.js_function('bs_init_file_field')(self.compound_id, start_field))
 
     def _validate(self, value, state=None):
-        return super(BsFileField, self)._validate(value, state)
+        v = super(BsFileField, self)._validate(value, state)
+        return v
 
 
 class BsTripleFileField(twf.TextField):
     template = "tw2.bs.templates.triplefilefield"
     type = 'text'
     placeholder = 'Enter url here'
-    resources = [
-        twc.JSLink(modname=__name__, filename='static/bs.js'),
-    ]
+    resources = [bs_file_field_js]
     options = []
 
     @classmethod
@@ -151,7 +160,7 @@ class StripBlanksAndBSRadioButtons(twc.Validator):
         return [v for v in value if self.any_content(v)]
 
 
-class RegroupMultipleValues(object):
+class BsMultipleValidator(object):
     def regroup(self, values):
         result = {}
         for value in values:
@@ -160,6 +169,37 @@ class RegroupMultipleValues(object):
                     result[k] = []
                 result[k].append(v)
         return result
+
+    def validate(self, inst, value, state=None):
+        if not isinstance(value, (list, tuple)):
+            raise twc.ValidationError("Corrupted, %s must be a list." % value)
+        removefirst = False
+        if len(value) > 1:
+            removefirst = True
+            value = value[1:]
+        for i, v in enumerate(value):
+            k = i
+            if removefirst:
+                k += 1
+            inst.children[k].value = v
+        if removefirst:
+            inst.children[0].value = ''
+        any_errors = False
+        data = []
+        for i, v in enumerate(value):
+            try:
+                k = i
+                if removefirst:
+                    k += 1
+                data.append(inst.children[k]._validate(v, data))
+            except vd.catch:
+                data.append(vd.Invalid)
+                any_errors = True
+        if removefirst:
+            data.insert(0, '')
+        if any_errors:
+            raise vd.ValidationError('childerror', inst.validator, inst)
+        return data
 
 
 class BsMultiple(twd.GrowingGridLayout):
@@ -171,6 +211,7 @@ class BsMultiple(twd.GrowingGridLayout):
 
     def _validate(self, value, state=None):
         value = [v for v in value if not ('del.x' in v and 'del.y' in v)]
-        value = twc.RepeatingWidget._validate(self, [None] + StripBlanksAndBSRadioButtons().to_python(value), state)[1:]
-        value = RegroupMultipleValues().regroup(value)
+        value = StripBlanksAndBSRadioButtons().to_python(value)
+        value = BsMultipleValidator().validate(self, [None] + StripBlanksAndBSRadioButtons().to_python(value), state)
+        value = BsMultipleValidator().regroup(value)
         return value
