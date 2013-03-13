@@ -212,6 +212,9 @@ class BsMultiple(twd.GrowingGridLayout):
     def _validate(self, value, state=None):
         value = [v for v in value if not ('del.x' in v and 'del.y' in v)]
         value = StripBlanksAndBSRadioButtons().to_python(value)
-        value = BsMultipleValidator().validate(self, [None] + StripBlanksAndBSRadioButtons().to_python(value), state)
+        vv = StripBlanksAndBSRadioButtons().to_python(value)
+        if not vv:
+            vv = [None]
+        value = BsMultipleValidator().validate(self, [None] + vv, state)
         value = BsMultipleValidator().regroup(value)
         return value
