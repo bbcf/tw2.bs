@@ -1,5 +1,4 @@
 bs_init_file_field = function(compound_id, select){
-    console.log("init file field " + compound_id);
     var selector = '#' + compound_id.split(':').join('\\:');
     $(selector).attr('name', '');
     var $root = $(selector + '\\:bs_container');
