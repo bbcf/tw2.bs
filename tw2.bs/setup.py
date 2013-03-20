@@ -1,17 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='',
+    name='tw2.bs',
     version='',
     description='',
     author='',
     author_email='',
     url='',
-    install_requires=[
-        "tw2.core",
-        ## Add other requirements here
-        # "Genshi",
-        ],
+    install_requires=["tw2.core"],
     packages=find_packages(exclude=['ez_setup', 'tests']),
     namespace_packages = ['tw2'],
     zip_safe=False,
@@ -22,9 +18,7 @@ setup(
         # Register your widgets so they can be listed in the WidgetBrowser
         widgets = tw2.bs
     """,
-    keywords = [
-        'toscawidgets.widgets',
-    ],
+    keywords = ['toscawidgets.widgets'],
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
