@@ -4,7 +4,6 @@
 *.swo
 *~
 *.log
-*.egg-info/
 #*#
 /tw2.bs/build/
 /tw2.bs/dist/
