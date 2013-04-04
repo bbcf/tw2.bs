@@ -21,13 +21,16 @@ class BsFileFieldValidator(twc.Validator):
 
     regex = re.compile('^https?://', re.IGNORECASE)
     extensions = None
+    msgs = {'required': 'You must enter a value.'}
 
     def to_python(self, value, state=None):
         """Convert an external value to Python and validate it."""
         if self._is_empty(value):
             if self.required:
-                raise twc.ValidationError('required', self)
-            return None
+                ve = twc.ValidationError('required', self)
+                raise ve
+
+            return value
         if self.strip and isinstance(value, basestring):
             value = value.strip()
         self._validate_python(value, state)
@@ -40,6 +43,7 @@ class BsFileFieldValidator(twc.Validator):
             isinstance(value, (list, tuple, dict)) and not value)
 
     def _validate_python(self, value, state=None):
+
         if isinstance(value, basestring):
             if not value.startswith('FieldStorage('):
                 try:

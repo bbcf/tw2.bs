@@ -42,7 +42,7 @@ bs_init_triple_file_field = function(compound_id, select){
     }
     // check the right radio button
     $root.find('input:radio.bsradio_' + select).attr('checked', 'checked');
-    
+
     //connect the radio buttons
     $root.find(':radio').change(function(){
         var val = $(this).val();
