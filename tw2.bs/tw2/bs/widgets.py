@@ -220,5 +220,5 @@ class BsMultiple(twd.GrowingGridLayout):
         if not vv:
             vv = [None]
         value = BsMultipleValidator().validate(self, [None] + vv, state)
-        value = BsMultipleValidator().regroup(value)
+        value = BsMultipleValidator().regroup(value[1:])
         return value
