@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='tw-bs',
+    name='tw2.bs',
     version='0.1.0.1',
     description='Special widgets for Bioscript',
     author='Yohan Jarosz',

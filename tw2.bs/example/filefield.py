@@ -5,6 +5,8 @@ import tw2.bs
 import tw2.jquery
 import tw2.dynforms
 
+import tw2.bs.widgets
+tw2.bs.widgets.DEBUG = True
 
 class Index(tw2.forms.FormPage):
     title = 'test'
