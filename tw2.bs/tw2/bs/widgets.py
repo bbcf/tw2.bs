@@ -43,7 +43,6 @@ class BsFileFieldValidator(twc.Validator):
             isinstance(value, (list, tuple, dict)) and not value)
 
     def _validate_python(self, value, state=None):
-
         if isinstance(value, basestring):
             if not value.startswith('FieldStorage('):
                 try:

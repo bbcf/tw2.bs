@@ -6,28 +6,6 @@ import tw2.jquery
 import tw2.dynforms
 
 
- # child = twd.HidingTableLayout()
-
- #    input_type = twd.HidingRadioButtonList(label='Input type',
- #                                           options=('Table', 'Signal'),
- #                                           mapping={'Table':  ['table'],
- #                                                    'Signal': ['signals', 'feature_type', 'assembly']},
- #                                           help_text='Select input type (Formatted table, or signal tracks)')
- #    table = twf.FileField(label='Table: ',
- #                          help_text='Select scores table',
- #                          validator=twf.FileValidator(required=True))
- #    feature_type = twd.HidingSingleSelectField(label='Feature type: ',
- #                                               options=ftypes, prompt_text=None,
- #                                               mapping={ftypes[-1][0]: ['features'],
- #                                                        1: ['upstream', 'downstream']},
- #                                               help_text='Choose a feature set or upload your own',
- #                                               validator=twc.Validator(required=True))
- #    class signals(twb.BsMultiple):
- #        files = twb.BsFileField(label='Signal: ',
- #                                help_text='Select signal file (.g. bedgraph)',
- #                                validator=twf.FileValidator(required=True))
-
-
 class Index(tw2.forms.FormPage):
     title = 'test'
 
