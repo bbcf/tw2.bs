@@ -88,9 +88,9 @@ class BsFileField(twf.InputField):
     def prepare(self):
         super(BsFileField, self).prepare()
         self.safe_modify('resources')
-        start_field = 'text'
-        if isinstance(self.value, cgi.FieldStorage):
-            start_field = 'file'
+        start_field = 'file'
+        if isinstance(self.value, basestring):
+            start_field = 'text'
         self.add_call(twc.js_function('bs_init_file_field')(self.compound_id, start_field))
 
     def _validate(self, value, state=None):
