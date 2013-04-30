@@ -126,8 +126,8 @@ class BsTripleFileField(twf.TextField):
         for opt in self.options:
             d = {}
             if len(opt) == 2:
-                d['value'] = opt[1]
-                d['display'] = opt[0]
+                d['value'] = opt[0]
+                d['display'] = opt[1]
             else:
                 d['value'] = opt
                 d['display'] = opt
