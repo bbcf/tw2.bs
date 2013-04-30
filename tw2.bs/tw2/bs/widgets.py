@@ -112,9 +112,9 @@ class BsTripleFileField(twf.TextField):
     def prepare(self):
         super(BsTripleFileField, self).prepare()
         self.safe_modify('resources')
-        start_field = 'text'
-        if isinstance(self.value, cgi.FieldStorage):
-            start_field = 'file'
+        start_field = 'file'
+        if isinstance(self.value, basestring):
+            start_field = 'text'
         else:
             try:
                 json.loads(self.value)
