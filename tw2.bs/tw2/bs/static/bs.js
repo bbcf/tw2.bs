@@ -1,6 +1,7 @@
 bs_init_file_field = function(compound_id, select){
     var selector = '#' + compound_id.split(':').join('\\:');
     $(selector).attr('name', '');
+    //console.log("INIT FILE FIELD : " + compound_id + ", and select: "+ select +" selector= " + selector);  
     var $root = $(selector + '\\:bs_container');
     $root.find('input:not(:radio):not(:' + select + ')').attr('name', '').hide();
     $root.find('input:' + select + '').attr('name', compound_id).show();
@@ -11,6 +12,8 @@ bs_init_file_field = function(compound_id, select){
         $root.find('input:' + val + '').attr('name', compound_id).show();
     });
      $root.find('input:not(:radio)').change(function(){
+        // small hack to make it work in chrome and safari
+        $(selector).bind('change', function(){eval($(selector).attr("onchange"));});
         $(selector).trigger("change");
         var row_id = compound_id.substring(0, compound_id.lastIndexOf(':'));
         var id_prefix = row_id.substring(0, row_id.lastIndexOf(':')+1);
@@ -20,7 +23,6 @@ bs_init_file_field = function(compound_id, select){
             bs_init_file_field(id_prefix + next_num + ':' + id_end, select);
         }
      });
-
 };
 
 bs_init_triple_file_field = function(compound_id, select){
@@ -47,6 +49,7 @@ bs_init_triple_file_field = function(compound_id, select){
         }
     });
      $root.find('input:not(:radio), select').change(function(){
+        $(selector).bind('change', function(){eval($(selector).attr("onchange"));});
         $(selector).trigger("change");
         var row_id = compound_id.substring(0, compound_id.lastIndexOf(':'));
         var id_prefix = row_id.substring(0, row_id.lastIndexOf(':')+1);
