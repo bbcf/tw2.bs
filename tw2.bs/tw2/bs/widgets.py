@@ -20,7 +20,7 @@ def debug(s):
     if DEBUG:
         print s
 
-class FloatValidator(RangeValidator):
+class FloatValidator(twc.RangeValidator):
     """
     Confirm the value is a float. This is derived from :class:`RangeValidator`
     so `min` and `max` can be specified.
