@@ -35,16 +35,16 @@ class FloatValidator(twc.RangeValidator):
             else:
                 return float(value)
         except ValueError:
-            raise ValidationError('notfloat', self)
+            raise twc.ValidationError('notfloat', self)
 
     def validate_python(self, value, state=None):
         if self.required and value is None:
-            raise ValidationError('required', self)
+            raise twc.ValidationError('required', self)
         if value is not None:
             if self.min and value < self.min:
-                raise ValidationError('toosmall', self)
+                raise twc.ValidationError('toosmall', self)
             if self.max and value > self.max:
-                raise ValidationError('toobig', self)
+                raise twc.ValidationError('toobig', self)
 
     def from_python(self, value):
         if value is None:
