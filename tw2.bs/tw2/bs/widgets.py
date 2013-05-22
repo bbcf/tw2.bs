@@ -20,6 +20,37 @@ def debug(s):
     if DEBUG:
         print s
 
+class FloatValidator(RangeValidator):
+    """
+    Confirm the value is a float. This is derived from :class:`RangeValidator`
+    so `min` and `max` can be specified.
+    """
+    msgs = {'notfloat': 'Must be a float',}
+
+    def to_python(self, value):
+        value = super(FloatValidator, self).to_python(value)
+        try:
+            if value is None or str(value) == '':
+                return None
+            else:
+                return float(value)
+        except ValueError:
+            raise ValidationError('notfloat', self)
+
+    def validate_python(self, value, state=None):
+        if self.required and value is None:
+            raise ValidationError('required', self)
+        if value is not None:
+            if self.min and value < self.min:
+                raise ValidationError('toosmall', self)
+            if self.max and value > self.max:
+                raise ValidationError('toobig', self)
+
+    def from_python(self, value):
+        if value is None:
+            return None
+        else:
+            return str(value)
 
 class BsFileFieldValidator(twc.Validator):
     """
