@@ -20,12 +20,13 @@ def debug(s):
     if DEBUG:
         print s
 
+
 class FloatValidator(twc.RangeValidator):
     """
     Confirm the value is a float. This is derived from :class:`RangeValidator`
     so `min` and `max` can be specified.
     """
-    msgs = {'notfloat': 'Must be a float',}
+    msgs = {'notfloat': 'Must be a float'}
 
     def to_python(self, value):
         value = super(FloatValidator, self).to_python(value)
@@ -51,6 +52,7 @@ class FloatValidator(twc.RangeValidator):
             return None
         else:
             return str(value)
+
 
 class BsFileFieldValidator(twc.Validator):
     """

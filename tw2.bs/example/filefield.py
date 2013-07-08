@@ -16,7 +16,7 @@ class Index(tw2.forms.FormPage):
             input_type = tw2.dynforms.HidingRadioButtonList(label='',
                 options=('File upload', 'Url'),
                 mapping={'File upload': ['fupload'], 'Url': ['url']})
-            fupload = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True))
+            fupload = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True), help_text="this is an help text.")
             url = tw2.forms.TextField()
 
         submit = tw2.forms.SubmitButton(id="submit", value="submit")
@@ -41,14 +41,18 @@ class Double(tw2.forms.FormPage):
     title = 'BioScript Widgets'
 
     class child(tw2.forms.TableForm):
-        one = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True))
+        one = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True), help_text='hello help text.')
 
 
 class Triple(tw2.forms.FormPage):
     title = 'BioScript Widgets'
 
     class child(tw2.forms.TableForm):
-        one = tw2.bs.BsTripleFileField(validator=tw2.bs.BsFileFieldValidator(required=True), options=[('one', '{"p": "http://one", "d": "one"}'), ('two', '{"p": "http://two", "d": "two"}'), ('not valid', '{"p": "cdcsd", "d": "two"}')])
+        one = tw2.bs.BsTripleFileField(validator=tw2.bs.BsFileFieldValidator(required=True),
+            options=[('one', '{"p": "http://one", "d": "one"}'),
+            ('two', '{"p": "http://two", "d": "two"}'),
+            ('not valid', '{"p": "cdcsd", "d": "two"}')],
+            help_text='hello help text.')
 
 
 class Mult(tw2.forms.FormPage):
