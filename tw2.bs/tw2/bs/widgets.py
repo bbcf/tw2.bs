@@ -88,7 +88,7 @@ class BsFileFieldValidator(twc.Validator):
                     value = value['p']
                 except:
                     pass
-                if not self.regex.search(value):
+                if value and not self.regex.search(value):
                     raise twc.ValidationError('"%s" is not a valid URL.' % value, self)
         elif isinstance(value, cgi.FieldStorage):
             if self.required and not getattr(value, 'filename', None):
