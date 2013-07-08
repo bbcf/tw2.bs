@@ -60,7 +60,7 @@ class Mult(tw2.forms.FormPage):
 
     class child(tw2.forms.TableForm):
         class inputs(tw2.bs.BsMultiple):
-            files = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=True))
+            files = tw2.bs.BsFileField(validator=tw2.bs.BsFileFieldValidator(required=False))
 
 
 class Test(tw2.forms.FormPage):

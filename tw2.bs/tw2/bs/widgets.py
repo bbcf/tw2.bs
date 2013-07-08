@@ -71,6 +71,9 @@ class BsFileFieldValidator(twc.Validator):
                 raise ve
 
             return value
+        if value == '""' or value == "''":
+            value = ''
+
         if self.strip and isinstance(value, basestring):
             value = value.strip()
         self._validate_python(value, state)
