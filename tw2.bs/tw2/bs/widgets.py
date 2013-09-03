@@ -28,7 +28,7 @@ class FloatValidator(twc.RangeValidator):
     """
     msgs = {'notfloat': 'Must be a float'}
 
-    def to_python(self, value):
+    def to_python(self, value, state=None):
         value = super(FloatValidator, self).to_python(value)
         try:
             if value is None or str(value) == '':
