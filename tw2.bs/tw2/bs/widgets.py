@@ -42,9 +42,9 @@ class FloatValidator(twc.RangeValidator):
         if self.required and value is None:
             raise twc.ValidationError('required', self)
         if value is not None:
-            if self.min is not None and value < self.min:
+            if self.min is not None and float(value) < float(self.min):
                 raise twc.ValidationError('toosmall', self)
-            if self.max is not None and value > self.max:
+            if self.max is not None and float(value) > float(self.max):
                 raise twc.ValidationError('toobig', self)
 
     def from_python(self, value):
