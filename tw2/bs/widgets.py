@@ -78,7 +78,7 @@ class BsFileFieldValidator(twc.Validator):
 bs_file_field_js = twc.JSLink(
     modname=__name__,
     filename='static/bs.js',
-    resources=[tw2j.jquery_js],
+    resources=[twj.jquery_js],
     location='headbottom')
 
 
