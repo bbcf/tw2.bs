@@ -1,25 +1,9 @@
 import tw2.core as twc
 import tw2.forms as twf
 import tw2.dynforms as twd
-import tw2
-import tw2.jquery
-import re
-import cgi
-import os
-try:
-    import simplejson as json
-except ImportError:
-    import json
-
-from tw2.core import validation as vd
-
-DEBUG = False
-
-
-def debug(s):
-    if DEBUG:
-        print s
-
+import tw2.jquery as twj
+from cgi import FieldStorage
+import os, json
 
 class FloatValidator(twc.RangeValidator):
     """
@@ -58,47 +42,34 @@ class BsFileFieldValidator(twc.Validator):
     """
     Validate the file field if there is one or validate the url.
     """
-
-    regex = re.compile('^https?://', re.IGNORECASE)
-    extensions = None
     msgs = {'required': 'You must enter a value.'}
+    extensions = None
 
     def to_python(self, value, state=None):
-        """Convert an external value to Python and validate it."""
-        if self._is_empty(value):
+        if  value is None or value == '' or \
+                (isinstance(value, (list, tuple, dict)) and not value):
             if self.required:
-                ve = twc.ValidationError('required', self)
-                raise ve
-
-            return value
-        if value == '""' or value == "''":
-            value = ''
-
+                raise twc.ValidationError('required', self)
+        else:
+            value = str(value).strip('"'+"'")
         if self.strip and isinstance(value, basestring):
             value = value.strip()
         self._validate_python(value, state)
         return value
 
-    @staticmethod
-    def _is_empty(value):
-        """Check whether the given value should be considered "empty"."""
-        return value is None or value == '' or (
-            isinstance(value, (list, tuple, dict)) and not value)
-
     def _validate_python(self, value, state=None):
         if isinstance(value, basestring):
             if not value.startswith('FieldStorage('):
                 try:
-                    value = json.loads(value)
-                    value = value['p']
+                    value = json.loads(value)['p']
                 except:
                     pass
-                if value and not self.regex.search(value):
-                    raise twc.ValidationError('"%s" is not a valid URL.' % value, self)
-        elif isinstance(value, cgi.FieldStorage):
+                if value and not value.startswith(("http://","https://","ftp://")):
+                    raise twc.ValidationError('"%s" is not a valid URL.' %value, self)
+        elif isinstance(value, FieldStorage):
             if self.required and not getattr(value, 'filename', None):
                 raise twc.ValidationError('required', self)
-            if self.extensions:
+            if self.extensions is not None:
                 ext = os.path.splitext(value.filename)[-1][1:]
                 if ext not in self.extensions:
                     raise twc.ValidationError('"%s" is not a valid extension :  only "%s" are allowed' % (ext, ', '.join([e for e in self.extensions])), self)
@@ -107,7 +78,7 @@ class BsFileFieldValidator(twc.Validator):
 bs_file_field_js = twc.JSLink(
     modname=__name__,
     filename='static/bs.js',
-    resources=[tw2.jquery.jquery_js],
+    resources=[tw2j.jquery_js],
     location='headbottom')
 
 
@@ -194,7 +165,7 @@ class StripBlanksAndBSRadioButtons(twc.Validator):
                 if self.any_content(val[k]):
                     return True
             return False
-        elif isinstance(val, cgi.FieldStorage):
+        elif isinstance(val, FieldStorage):
             try:
                 return bool(val.filename)
             except:
@@ -238,13 +209,13 @@ class BsMultipleValidator(object):
                 if removefirst:
                     k += 1
                 data.append(inst.children[k]._validate(v, data))
-            except vd.catch:
-                data.append(vd.Invalid)
+            except twc.validation.catch:
+                data.append(twc.validation.Invalid)
                 any_errors = True
         if removefirst:
             data.insert(0, '')
         if any_errors:
-            raise vd.ValidationError('childerror', inst.validator, inst)
+            raise twc.validation.ValidationError('childerror', inst.validator, inst)
         return data
 
 

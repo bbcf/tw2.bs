@@ -3,10 +3,10 @@ from setuptools import setup, find_packages
 
 setup(
     name='tw2.bs',
-    version='0.1.0.1',
+    version='0.2',
     description='Special widgets for Bioscript',
-    author='Yohan Jarosz',
-    author_email='yohan.jarosz@epfl.ch',
+    author='EPFL-BBCF',
+    author_email='webmaster-bbcf@epfl.ch',
     url='http://gdv.epfl.ch/bs',
     licence='EPFL-BBCF',
     install_requires=[
@@ -15,7 +15,6 @@ setup(
         "tw2.devtools",
         "tw2.jquery",
         "tw2.dynforms"
-        ## Add other requirements here
         # "Genshi",
     ],
     packages=find_packages(exclude=['ez_setup', 'tests']),
