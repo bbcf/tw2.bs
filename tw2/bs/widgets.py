@@ -13,7 +13,7 @@ class FloatValidator(twc.RangeValidator):
     msgs = {'notfloat': 'Must be a float'}
 
     def to_python(self, value, state=None):
-        value = twc.RangeValidator.to_python(self,value)
+        value = twc.RangeValidator.to_python(self,value,state)
         try:
             if value is None or str(value) == '':
                 return None
