@@ -13,7 +13,7 @@ class FloatValidator(twc.RangeValidator):
     msgs = {'notfloat': 'Must be a float'}
 
     def to_python(self, value, state=None):
-        value = twc.RangeValidator.to_python(value)
+        value = twc.RangeValidator.to_python(self,value)
         try:
             if value is None or str(value) == '':
                 return None
@@ -71,9 +71,9 @@ class BsFileFieldValidator(twc.Validator):
                 raise twc.ValidationError('required', self)
             if self.extensions is not None:
                 ext = os.path.splitext(value.filename)[-1][1:]
-                errmsg = (ext, ', '.join([e for e in self.extensions])
+                errmsg = (ext, ', '.join([e for e in self.extensions]))
                 if ext not in self.extensions:
-                    raise twc.ValidationError('"%s" is not a valid extension: only "%s" are allowed' %errmsg), self)
+                    raise twc.ValidationError('"%s" is not a valid extension: only "%s" are allowed' %errmsg, self)
 
 
 class BsFileField(twf.InputField):
@@ -100,7 +100,7 @@ class BsFileField(twf.InputField):
         pass
 
     def prepare(self):
-        twf.InputField.prepare()
+        twf.InputField.prepare(self)
         self.safe_modify('resources')
         self.add_call(twc.js_function(self.bsfield)(self.compound_id, self._start_field()))
         self._read_opts()
@@ -111,7 +111,7 @@ class BsTripleFileField(BsFileField):
     options = []
 
     def _start_field(self):
-        start_field = BsFileField._start_field()
+        start_field = BsFileField._start_field(self)
         if start_field == 'file':
             try:
                 json.loads(self.value)
@@ -131,12 +131,15 @@ class BsMultiple(twd.GrowingGridLayout):
 
     template = "tw2.bs.templates.multiple"
 
-    def clear_content(val):
+    def clear_content(self,val):
         if isinstance(val, (list, tuple)):
-            return [clear_content(v) for v in val if clear_content(v)]
+            return [self.clear_content(v) for v in val if self.clear_content(v)]
         elif isinstance(val, dict):
-            return dict((k,clear_content(v)) for k,v in val.iteritems()
-                        if k == 'id' or 'bs_group' in k or clear_content(v))
+            res = dict((k,v) for k,v in val.iteritems()
+                       if k != 'id' and 'bs_group' not in k and self.clear_content(v))
+            if res: 
+                res.update(dict((k,v) for k,v in val.iteritems() if k == 'id' or 'bs_group' in k))
+                return res
         elif isinstance(val, FieldStorage) and val.filename:
             return val
         elif val:
@@ -144,14 +147,15 @@ class BsMultiple(twd.GrowingGridLayout):
 
 
     def _validate(self, value, state=None):
-        value = clear_content([v for v in value 
-                               if not ('del.x' in v and 'del.y' in v)])
+        value = self.clear_content([v for v in value 
+                                    if not ('del.x' in v and 'del.y' in v)])
+        self.children[0].value = ''
         for k,v in enumerate(value):
             self.children[k+1].value = v 
             self.children[k+1]._validate(v,state)
         result = {}
         for val in value:
-            for k, v in value.iteritems():
+            for k, v in val.iteritems():
                 if k not in result:
                     result[k] = []
                 result[k].append(v)
