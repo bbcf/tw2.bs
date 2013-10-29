@@ -11,7 +11,7 @@ bs_init_file_field = function(compound_id, select){
         $root.find('input:not(:radio):not(:'+ val + ')').attr('name', '').hide();
         $root.find('input:' + val + '').attr('name', compound_id).show();
     });
-     $root.find('input:not(:radio)').change(function(){
+    $root.find('input:not(:radio)').change(function(){
         // small hack to make it work in chrome and safari
         $(selector).bind('change', function(){eval($(selector).attr("onchange"));});
         $(selector).trigger("change");
@@ -22,7 +22,7 @@ bs_init_file_field = function(compound_id, select){
         if (next_num){
             bs_init_file_field(id_prefix + next_num + ':' + id_end, select);
         }
-     });
+    });
 };
 
 bs_init_triple_file_field = function(compound_id, select){
@@ -48,7 +48,7 @@ bs_init_triple_file_field = function(compound_id, select){
             $root.find('input:not(:radio):not(:' + val + ')').attr('name', '').hide();
         }
     });
-     $root.find('input:not(:radio), select').change(function(){
+    $root.find('input:not(:radio), select').change(function(){
         $(selector).bind('change', function(){eval($(selector).attr("onchange"));});
         $(selector).trigger("change");
         var row_id = compound_id.substring(0, compound_id.lastIndexOf(':'));
@@ -58,6 +58,6 @@ bs_init_triple_file_field = function(compound_id, select){
         if (next_num){
             bs_init_triple_file_field(id_prefix + next_num + ':' +id_end, select);
         }
-     });
+    });
 };
 

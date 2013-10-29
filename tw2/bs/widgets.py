@@ -234,5 +234,4 @@ class BsMultiple(twd.GrowingGridLayout):
             vv = [None]
         value = BsMultipleValidator().validate(self, [None] + vv, state)
         value = BsMultipleValidator().regroup(value[1:])
-        debug('Got value(s) "%s"' % value)
         return value
