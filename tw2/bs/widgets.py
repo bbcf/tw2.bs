@@ -13,7 +13,7 @@ class FloatValidator(twc.RangeValidator):
     msgs = {'notfloat': 'Must be a float'}
 
     def to_python(self, value, state=None):
-        value = super(FloatValidator, self).to_python(value)
+        value = twc.RangeValidator.to_python(value)
         try:
             if value is None or str(value) == '':
                 return None
@@ -71,167 +71,88 @@ class BsFileFieldValidator(twc.Validator):
                 raise twc.ValidationError('required', self)
             if self.extensions is not None:
                 ext = os.path.splitext(value.filename)[-1][1:]
+                errmsg = (ext, ', '.join([e for e in self.extensions])
                 if ext not in self.extensions:
-                    raise twc.ValidationError('"%s" is not a valid extension :  only "%s" are allowed' % (ext, ', '.join([e for e in self.extensions])), self)
-
-
-bs_file_field_js = twc.JSLink(
-    modname=__name__,
-    filename='static/bs.js',
-    resources=[twj.jquery_js],
-    location='headbottom')
+                    raise twc.ValidationError('"%s" is not a valid extension: only "%s" are allowed' %errmsg), self)
 
 
 class BsFileField(twf.InputField):
     template = "tw2.bs.templates.doublefilefield"
     type = 'text'
     placeholder = 'Enter url here'
-    resources = [bs_file_field_js]
+    resources = [twc.JSLink(
+            modname=__name__,
+            filename='static/bs.js',
+            resources=[twj.jquery_js],
+            location='headbottom')]
+    bsfield = 'bs_init_file_field'
 
     @classmethod
     def post_define(cls):
         pass
 
-    def prepare(self):
-        super(BsFileField, self).prepare()
-        self.safe_modify('resources')
-        start_field = 'file'
+    def _start_field(self):
         if isinstance(self.value, basestring):
-            start_field = 'text'
-        self.add_call(twc.js_function('bs_init_file_field')(self.compound_id, start_field))
+            return 'text'
+        return 'file'
 
-    def _validate(self, value, state=None):
-        v = super(BsFileField, self)._validate(value, state)
-        return v
+    def _read_opts(self):
+        pass
 
+    def prepare(self):
+        twf.InputField.prepare()
+        self.safe_modify('resources')
+        self.add_call(twc.js_function(self.bsfield)(self.compound_id, self._start_field()))
+        self._read_opts()
 
-class BsTripleFileField(twf.TextField):
+class BsTripleFileField(BsFileField):
     template = "tw2.bs.templates.triplefilefield"
-    type = 'text'
-    placeholder = 'Enter url here'
-    resources = [bs_file_field_js]
+    bsfield = 'bs_init_triple_file_field'
     options = []
 
-    @classmethod
-    def post_define(cls):
-        pass
-
-    def prepare(self):
-        super(BsTripleFileField, self).prepare()
-        self.safe_modify('resources')
-        start_field = 'file'
-        if isinstance(self.value, basestring):
-            start_field = 'text'
-        else:
+    def _start_field(self):
+        start_field = BsFileField._start_field()
+        if start_field == 'file':
             try:
                 json.loads(self.value)
-                start_field = 'select'
+                return 'select'
             except:
                 pass
-        self.add_call(twc.js_function('bs_init_triple_file_field')(self.compound_id, start_field))
-        opts = []
-        for opt in self.options:
-            d = {}
-            if len(opt) == 2:
-                d['value'] = opt[0]
-                d['display'] = opt[1]
-            else:
-                d['value'] = opt
-                d['display'] = opt
-            opts.append(d)
+        return start_field
+
+    def _read_opts(self):
         self.safe_modify('attrs')
-        self.attrs['opts'] = opts
-
-    def _validate(self, value, state=None):
-        return super(BsTripleFileField, self)._validate(value, state)
-
-
-# class Multi(tw2.dynforms.GrowingGridLayout):
-#     pass
-
-class StripBlanksAndBSRadioButtons(twc.Validator):
-    def any_content(self, val):
-        if isinstance(val, (list, tuple)):
-            for v in val:
-                if self.any_content(v):
-                    return True
-            return False
-        elif isinstance(val, dict):
-            for k in val:
-                if k == 'id':
-                    continue
-                if 'bs_group' in k:
-                    continue
-                if self.any_content(val[k]):
-                    return True
-            return False
-        elif isinstance(val, FieldStorage):
-            try:
-                return bool(val.filename)
-            except:
-                return False
-        else:
-            return bool(val)
-
-    def to_python(self, value, state=None):
-        return [v for v in value if self.any_content(v)]
-
-
-class BsMultipleValidator(object):
-    def regroup(self, values):
-        result = {}
-        for value in values:
-            for k, v in value.iteritems():
-                if k not in result:
-                    result[k] = []
-                result[k].append(v)
-        return result
-
-    def validate(self, inst, value, state=None):
-        if not isinstance(value, (list, tuple)):
-            raise twc.ValidationError("Corrupted, %s must be a list." % value)
-        removefirst = False
-        if len(value) > 1:
-            removefirst = True
-            value = value[1:]
-        for i, v in enumerate(value):
-            k = i
-            if removefirst:
-                k += 1
-            inst.children[k].value = v
-        if removefirst:
-            inst.children[0].value = ''
-        any_errors = False
-        data = []
-        for i, v in enumerate(value):
-            try:
-                k = i
-                if removefirst:
-                    k += 1
-                data.append(inst.children[k]._validate(v, data))
-            except twc.validation.catch:
-                data.append(twc.validation.Invalid)
-                any_errors = True
-        if removefirst:
-            data.insert(0, '')
-        if any_errors:
-            raise twc.validation.ValidationError('childerror', inst.validator, inst)
-        return data
+        self.attrs['opts'] = [{'value':   opt[0] if isinstance(opt,(list,tuple)) else opt,
+                               'display': opt[1] if isinstance(opt,(list,tuple)) else opt}
+                              for opt in self.options]
 
 
 class BsMultiple(twd.GrowingGridLayout):
 
     template = "tw2.bs.templates.multiple"
 
-    def prepare(self):
-        super(BsMultiple, self).prepare()
+    def clear_content(val):
+        if isinstance(val, (list, tuple)):
+            return [clear_content(v) for v in val if clear_content(v)]
+        elif isinstance(val, dict):
+            return dict((k,clear_content(v)) for k,v in val.iteritems()
+                        if k == 'id' or 'bs_group' in k or clear_content(v))
+        elif isinstance(val, FieldStorage) and val.filename:
+            return val
+        elif val:
+            return val
+
 
     def _validate(self, value, state=None):
-        value = [v for v in value if not ('del.x' in v and 'del.y' in v)]
-        value = StripBlanksAndBSRadioButtons().to_python(value)
-        vv = StripBlanksAndBSRadioButtons().to_python(value)
-        if not vv:
-            vv = [None]
-        value = BsMultipleValidator().validate(self, [None] + vv, state)
-        value = BsMultipleValidator().regroup(value[1:])
-        return value
+        value = clear_content([v for v in value 
+                               if not ('del.x' in v and 'del.y' in v)])
+        for k,v in enumerate(value):
+            self.children[k+1].value = v 
+            self.children[k+1]._validate(v,state)
+        result = {}
+        for val in value:
+            for k, v in value.iteritems():
+                if k not in result:
+                    result[k] = []
+                result[k].append(v)
+        return result
